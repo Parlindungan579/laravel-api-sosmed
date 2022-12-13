@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-class PostController extends Controller
+class UserController extends Controller
 {
     /**
      * index
@@ -19,10 +19,10 @@ class PostController extends Controller
     public function index()
     {
         //get posts
-        $posts = Post::latest()->paginate(5);
+        $posts = User::latest()->paginate(5);
 
         //return collection of posts as a resource
-        return new PostResource(true, 'List Data Posts', $posts);
+        return new UserResource(true, 'List Data Posts', $posts);
     }
 
     /**
@@ -35,9 +35,12 @@ class PostController extends Controller
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
-            'user_id'       => 'required',
+            'phone_number'  => 'required',
             'image'         => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'caption'       => 'required',
+            'username'      => 'required',
+            'firstname'     => 'required',
+            'lastname'      => 'required',
+            'date_of_birth' => 'required',
         ]);
 
         //check if validation fails
@@ -47,17 +50,20 @@ class PostController extends Controller
 
         //upload image
         $image = $request->file('image');
-        $image->storeAs('public/posts', $image->hashName());
+        $image->storeAs('public/users', $image->hashName());
 
         //create post
-        $post = Post::create([
-            'user_id'       => $request->user_id,
+        $post = User::create([
+            'phone_number'  => $request->phone_number,
             'image'         => $image->hashName(),
-            'caption'       => $request->caption,
+            'username'      => $request->username,
+            'firstname'     => $request->firstname,
+            'lastname'      => $request->lastname,
+            'date_of_birth' => $request->date_of_birth,
         ]);
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Ditambahkan!', $post);
+        return new UserResource(true, 'Data Post Berhasil Ditambahkan!', $post);
     }
 
     /**
@@ -66,10 +72,10 @@ class PostController extends Controller
      * @param  mixed $post
      * @return void
      */
-    public function show(Post $post)
+    public function show(User $post)
     {
         //return single post as a resource
-        return new PostResource(true, 'Data Post Ditemukan!', $post);
+        return new UserResource(true, 'Data Post Ditemukan!', $post);
     }
 
     /**
@@ -79,13 +85,16 @@ class PostController extends Controller
      * @param  mixed $post
      * @return void
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, User $post)
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
-            'user_id'       => 'required',
+            'phone_number'  => 'required',
             'image'         => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'caption'       => 'required',
+            'username'      => 'required',
+            'firstname'     => 'required',
+            'lastname'      => 'required',
+            'date_of_birth' => 'required',
         ]);
 
         //check if validation fails
@@ -98,28 +107,34 @@ class PostController extends Controller
 
             //upload image
             $image = $request->file('image');
-            $image->storeAs('public/posts', $image->hashName());
+            $image->storeAs('public/users', $image->hashName());
 
             //delete old image
-            Storage::delete('public/posts/' . $post->image);
+            Storage::delete('public/users/' . $post->image);
 
             //update post with new image
             $post->update([
-                'user_id'       => $request->user_id,
+                'phone_number'  => $request->phone_number,
                 'image'         => $image->hashName(),
-                'caption'       => $request->caption,
+                'username'      => $request->username,
+                'firstname'     => $request->firstname,
+                'lastname'      => $request->lastname,
+                'date_of_birth' => $request->date_of_birth,
             ]);
         } else {
 
             //update post without image
             $post->update([
-                'user_id'       => $request->user_id,
-                'caption'       => $request->caption,
+                'phone_number'  => $request->phone_number,
+                'username'      => $request->username,
+                'firstname'     => $request->firstname,
+                'lastname'      => $request->lastname,
+                'date_of_birth' => $request->date_of_birth,
             ]);
         }
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Diubah!', $post);
+        return new UserResource(true, 'Data Post Berhasil Diubah!', $post);
     }
 
     /**
@@ -128,15 +143,15 @@ class PostController extends Controller
      * @param  mixed $post
      * @return void
      */
-    public function destroy(Post $post)
+    public function destroy(User $post)
     {
         //delete image
-        Storage::delete('public/posts/' . $post->image);
+        Storage::delete('public/users/' . $post->image);
 
         //delete post
         $post->delete();
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Dihapus!', null);
+        return new UserResource(true, 'Data Post Berhasil Dihapus!', null);
     }
 }
