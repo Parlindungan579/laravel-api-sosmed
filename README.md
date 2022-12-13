@@ -2,7 +2,7 @@
 
 Langkah-langkahnya adalah sebagai berikut :
 
-- Buat database sosmed di file .env.
+- Buat database MySQL dengan nama sosmed di file .env
 - npm install
 - Kemudian jalankan perintah php artisan serve
 
